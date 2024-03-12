@@ -1,18 +1,16 @@
 package astrolabe;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
-import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 
-public class Config {
+public class GlobalConfig {
     public final double maxAcceleration;
     public final double maxVelocity;
     public final double maxCentripetal;
     public final DifferentialDriveKinematics kinematics;
 
-    public Config(
+    public GlobalConfig(
         double maxAcceleration,
         double maxVelocity,
         double maxCentripetal,
