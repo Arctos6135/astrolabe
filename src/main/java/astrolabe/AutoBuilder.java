@@ -10,6 +10,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class AutoBuilder {
     private static boolean isConfigured = false;
@@ -25,7 +27,9 @@ public class AutoBuilder {
         Supplier<Pose2d> getPose,
         Supplier<ChassisSpeeds> getSpeeds,
         Consumer<Pose2d> resetPose,
-        Consumer<ChassisSpeeds> output
+        Consumer<ChassisSpeeds> output,
+        GlobalConfig config,
+        Subsystem... requirements
     ) {
         if (isConfigured) {
             DriverStation.reportError("Attempted to configure astrolabe AutoBuilder when it was already configured.", new StackTraceElement[]{});
@@ -33,7 +37,10 @@ public class AutoBuilder {
         }
         isConfigured = true;
 
-        commandBuilder = path -> Commands.none();
+        commandBuilder = path -> {
+            var trajectory = path.generateTrajectory(config);
+            return new Ramsete(trajectory, controller, requirements);
+        };
 
         AutoBuilder.getPose = getPose;
         AutoBuilder.getSpeeds = getSpeeds;
