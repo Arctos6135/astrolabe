@@ -19,7 +19,13 @@ public class Ramsete extends Command {
     private static Supplier<Pose2d> getPose;
     private static Consumer<ChassisSpeeds> output;
 
-    public Ramsete(Trajectory trajectory, RamseteController controller, Subsystem... requirements) {
+    public Ramsete(
+        Trajectory trajectory, 
+        RamseteController controller,
+        Supplier<Pose2d> getPose,
+        Consumer<ChassisSpeeds> output,
+        Subsystem... requirements
+    ) {
         this.trajectory = trajectory;
         this.controller = controller;
         addRequirements(requirements);
