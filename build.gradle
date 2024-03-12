@@ -1,49 +1,36 @@
 plugins {
-    id "java"
-    id "edu.wpi.first.GradleRIO" version "2024.2.1"
-    id 'com.diffplug.spotless' version '6.20.0'
+  id 'cpp'
+  id 'java'
+  id 'edu.wpi.first.wpilib.repositories.WPILibRepositoriesPlugin' version '2020.2'
+  id 'edu.wpi.first.NativeUtils' version '2024.6.1'
+  id 'edu.wpi.first.GradleJni' version '1.1.0'
+  id 'edu.wpi.first.GradleVsCode' version '2.1.0'
 }
 
+repositories {
+  mavenCentral()
+}
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+if (project.hasProperty('releaseMode')) {
+  wpilibRepositories.addAllReleaseRepositories(project)
+} else {
+  wpilibRepositories.addAllDevelopmentRepositories(project)
+}
 
-// Set to true to use debug for JNI.
-wpi.java.debugJni = false
-
-// Set this to true to enable desktop support.
-def includeDesktopSupport = true
-
-// Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
-// Also defines JUnit 5.
-
+// Apply Java configuration
 dependencies {
-    //api wpi.java.deps.wpilib()
-
-    nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
-    nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
-    simulationDebug wpi.sim.enableDebug()
-
-    nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
-    nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
-    simulationRelease wpi.sim.enableRelease()
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    implementation 'edu.wpi.first.ntcore:ntcore-java:2024.+'
+    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2024.+'
+    implementation 'edu.wpi.first.wpilibNewCommands:wpilibNewCommands-java:2024.+'
+    implementation 'edu.wpi.first.wpiutil:wpiutil-java:2024.+'
+    implementation 'edu.wpi.first.wpimath:wpimath-java:2024.+'
+    implementation 'edu.wpi.first.wpiunits:wpiunits-java:2024.+'
+    implementation 'edu.wpi.first.hal:hal-java:2024.+'
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.12.4"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.12.4"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.12.4"
 }
 
-test {
-    useJUnitPlatform()
-    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
-}
-wpi.java.configureTestTasks(test)
-
-// Configure string concat to always inline compile
-tasks.withType(JavaCompile) {
-    options.compilerArgs.add '-XDstringConcat=inline'
-}
-
-allprojects {
-    apply from: "$rootProject.projectDir/format.gradle"
+wrapper {
+  gradleVersion '8.4'
 }

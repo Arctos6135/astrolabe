@@ -1,5 +1,3 @@
 package astrolabe;
 
-public class AutoBuilder {
-    
-}
+public class AutoBuilder {}
