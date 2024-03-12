@@ -39,7 +39,7 @@ public class AutoBuilder {
 
         commandBuilder = path -> {
             var trajectory = path.generateTrajectory(config);
-            return new Ramsete(trajectory, controller, requirements);
+            return new Ramsete(trajectory, controller, getPose, output, requirements);
         };
 
         AutoBuilder.getPose = getPose;
