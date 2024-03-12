@@ -2,10 +2,10 @@ package astrolabe;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class AstrolabeAuto extends Command {
+public class FollowPath extends Command {
     private final Command inner;
 
-    public AstrolabeAuto(AstrolabePath path) {
+    public FollowPath(AstrolabePath path) {
         inner = AutoBuilder.buildPathFollowingCommand(path);
     }
 
