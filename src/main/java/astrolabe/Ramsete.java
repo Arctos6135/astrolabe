@@ -16,8 +16,8 @@ public class Ramsete extends Command {
     private final RamseteController controller;
     private final Timer timer = new Timer();
 
-    private static Supplier<Pose2d> getPose;
-    private static Consumer<ChassisSpeeds> output;
+    private final Supplier<Pose2d> getPose;
+    private final Consumer<ChassisSpeeds> output;
 
     public Ramsete(
         Trajectory trajectory, 
@@ -28,19 +28,26 @@ public class Ramsete extends Command {
     ) {
         this.trajectory = trajectory;
         this.controller = controller;
+        this.getPose = getPose;
+        this.output = output;
+
         addRequirements(requirements);
     }
 
     @Override
     public void initialize() {
-        timer.reset();
+        System.out.println("Initializing ramsete");
+        timer.restart();
     }
 
     @Override
     public void execute() {
+        System.out.printf("Executing ramsete at timer %s\n", timer.get());
         var state = trajectory.sample(timer.get());
         var speeds = controller.calculate(getPose.get(), state);
         output.accept(speeds);
+
+        AstrolabeLogger.targetPoseLogger.accept(state.poseMeters);
     }
 
     @Override
@@ -50,6 +57,7 @@ public class Ramsete extends Command {
 
     @Override
     public void end(boolean i) {
+        System.out.println("Ramsete finished");
         output.accept(new ChassisSpeeds());
     }
 }

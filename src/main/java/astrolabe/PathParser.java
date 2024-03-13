@@ -5,8 +5,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator; 
-import java.util.Map; 
-  
+import java.util.Map;
+import java.util.Objects;
+
 import org.json.simple.JSONArray; 
 import org.json.simple.JSONObject; 
 import org.json.simple.parser.*;
@@ -21,8 +22,15 @@ public class PathParser {
         System.out.println(json.toString());
 
         ArrayDeque<Pose2d> anchors = new ArrayDeque<>();
+
+        for (Object waypoint : (JSONArray) json.get("waypoints")) {
+            anchors.add(parseWaypoint((JSONObject) waypoint));
+        }
+
         Pose2d start = anchors.pollFirst();
         Pose2d end = anchors.pollLast();
+        Objects.requireNonNull(start);
+        Objects.requireNonNull(end);
         boolean reversed = (boolean) json.get("reversed");
 
         ArrayList<Translation2d> waypoints = new ArrayList<>();
@@ -55,11 +63,11 @@ public class PathParser {
     }
 
     private static Translation2d parseXY(JSONObject xy) {
-        String xJson = (String) xy.get("x");
-        String yJson = (String) xy.get("y");
+        double x = (Double) xy.get("x");
+        double y = (Double) xy.get("y");
         return new Translation2d(
-            Double.parseDouble(xJson),
-            Double.parseDouble(yJson)
+            x,
+            y
         );
     }
 }
