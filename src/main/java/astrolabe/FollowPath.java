@@ -14,7 +14,7 @@ public class FollowPath extends Command {
 
     public FollowPath(String pathName) {
         try {
-            String filePath = Filesystem.getDeployDirectory() + "pathplanner/paths/" + pathName + ".path";
+            String filePath = Filesystem.getDeployDirectory() + "/pathplanner/paths/" + pathName + ".path";
             inner = AutoBuilder.buildPathFollowingCommand(PathParser.loadPath(filePath));
         } catch (Exception e) {
             throw new RuntimeException(e);
