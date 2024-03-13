@@ -1,7 +1,9 @@
 package astrolabe;
   
 import java.io.FileReader;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator; 
 import java.util.Map; 
   
@@ -18,28 +20,48 @@ import java.util.List;
 
 
 public class PathParser {
-    public AstrolabePath astrolabePath;
+    public AstrolabePath loadPath(String pathName) throws Exception{
+        JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(pathName));
 
-    public void LoadPath(String pathName) throws Exception{
-        Object obj = new JSONParser().parse(new FileReader(pathName));           
-        // typecasting obj to JSONObject 
-        JSONObject jo = (JSONObject) obj;
+        ArrayDeque<Pose2d> anchors = new ArrayDeque<>();
+        Pose2d start = anchors.pollFirst();
+        Pose2d end = anchors.pollLast();
+        boolean reversed = (boolean) json.get("reversed");
 
-        JSONArray wayPoints = (JSONArray) jo.get("waypoints");
-        
-        // iterating phoneNumbers 
-        Map<String, Map<String, Double>> itr1;
-        Iterator itr2 = wayPoints.iterator(); 
-        List<Pose2d> poses = new ArrayList<>();
-        
-        while (itr2.hasNext()) { 
-            itr1 = ((Map) itr2.next()); 
-            double x = itr1.get("anchor").get("x"); 
-            double y = itr1.get("anchor").get("y"); 
-            double rotationX = itr1.get("nextControl").get("x"); 
-            double rotationY = itr1.get("nextControl").get("y"); 
-            poses.add(new Pose2d(x, y, new Rotation2d(rotationX, rotationY)));
+        ArrayList<Translation2d> waypoints = new ArrayList<>();
+
+        for (Pose2d pose : anchors) {
+            waypoints.add(pose.getTranslation());
         }
-        thisastrolabePath = new AstrolabePath(poses.get(0), new ArrayList<Translation2d>(), poses.get(1), (boolean) jo.get("reversed"))
+
+        return new AstrolabePath(start, waypoints, end, reversed);
+    }
+
+    public Pose2d parseWaypoint(JSONObject waypoint) {
+        Translation2d anchor = parseXY((JSONObject) waypoint.get("anchor"));
+        Translation2d delta;
+
+        if (waypoint.get("nextControl") instanceof JSONObject nextControlJson) {
+            Translation2d nextControl = parseXY(nextControlJson);
+            delta = nextControl.minus(anchor);
+        } else if (waypoint.get("prevControl") instanceof JSONObject prevControlJson) {
+            Translation2d prevControl = parseXY(prevControlJson);
+            delta = anchor.minus(prevControl);
+        } else {
+            throw new RuntimeException("missing either previous or next control point");
+        }
+
+        Rotation2d angle = delta.getAngle();
+
+        return new Pose2d(anchor, angle);
+    }
+
+    private Translation2d parseXY(JSONObject xy) {
+        String xJson = (String) xy.get("x");
+        String yJson = (String) xy.get("y");
+        return new Translation2d(
+            Double.parseDouble(xJson),
+            Double.parseDouble(yJson)
+        );
     }
 }
