@@ -21,10 +21,11 @@ public class Refine extends SequentialCommandGroup {
         Consumer<ChassisSpeeds> output,
         Subsystem... requirements
     ) {
+        double refineDistance = 1;
         Pose2d refinedEnd;
         Rotation2d endAngle = path.endPose().getRotation();
         Translation2d endTranslation = path.endPose().getTranslation();
-        Translation2d refinedDelta = new Translation2d(1, endAngle);
+        Translation2d refinedDelta = new Translation2d(refineDistance, endAngle);
 
         if (path.reversed()) {
             refinedEnd = new Pose2d(endTranslation.plus(refinedDelta), endAngle);
@@ -36,7 +37,8 @@ public class Refine extends SequentialCommandGroup {
 
         addCommands(
             mainPath,
-            new DriveToAngle(() -> getPose.get().getRotation(), output, endAngle, requirements)
+            new DriveToAngle(() -> getPose.get().getRotation(), output, endAngle, requirements),
+            new DriveToDistance(() -> getPose.get().getTranslation().getDistance(refinedEnd.getTranslation()), output, refineDistance, requirements)
         );
     }
 }

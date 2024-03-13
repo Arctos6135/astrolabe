@@ -20,7 +20,7 @@ import java.util.List;
 
 
 public class PathParser {
-    public AstrolabePath loadPath(String pathName) throws Exception{
+    public AstrolabePath loadPath(String pathName) throws Exception {
         JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(pathName));
 
         ArrayDeque<Pose2d> anchors = new ArrayDeque<>();
