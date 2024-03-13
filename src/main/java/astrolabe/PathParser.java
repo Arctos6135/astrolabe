@@ -15,13 +15,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-import java.util.List;
-
-
-
 public class PathParser {
     public static AstrolabePath loadPath(String pathName) throws Exception {
         JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(pathName));
+        System.out.println(json.toString());
 
         ArrayDeque<Pose2d> anchors = new ArrayDeque<>();
         Pose2d start = anchors.pollFirst();
@@ -32,6 +29,7 @@ public class PathParser {
 
         for (Pose2d pose : anchors) {
             waypoints.add(pose.getTranslation());
+            System.out.println(pose.toString());
         }
 
         return new AstrolabePath(start, waypoints, end, reversed);
