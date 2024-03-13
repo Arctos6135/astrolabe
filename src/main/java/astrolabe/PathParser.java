@@ -20,7 +20,7 @@ import java.util.List;
 
 
 public class PathParser {
-    public AstrolabePath loadPath(String pathName) throws Exception {
+    public static AstrolabePath loadPath(String pathName) throws Exception {
         JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(pathName));
 
         ArrayDeque<Pose2d> anchors = new ArrayDeque<>();
@@ -37,7 +37,7 @@ public class PathParser {
         return new AstrolabePath(start, waypoints, end, reversed);
     }
 
-    public Pose2d parseWaypoint(JSONObject waypoint) {
+    public static Pose2d parseWaypoint(JSONObject waypoint) {
         Translation2d anchor = parseXY((JSONObject) waypoint.get("anchor"));
         Translation2d delta;
 
@@ -56,7 +56,7 @@ public class PathParser {
         return new Pose2d(anchor, angle);
     }
 
-    private Translation2d parseXY(JSONObject xy) {
+    private static Translation2d parseXY(JSONObject xy) {
         String xJson = (String) xy.get("x");
         String yJson = (String) xy.get("y");
         return new Translation2d(
