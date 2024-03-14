@@ -65,13 +65,24 @@ public class AutoBuilder {
         }
         isConfigured = true;
 
+        // commandBuilder = path -> {
+        //     var trajectory = path.generateTrajectory(config);
+        //     return new Refine(
+        //         refinedPath -> {
+        //             var refinedTraj = refinedPath.generateTrajectory(config);
+        //             return new Ramsete(refinedTraj, controller, getPose, output, requirements);
+        //         }, path, getPose, output, requirements
+        //     );
+        // };
         commandBuilder = path -> {
             var trajectory = path.generateTrajectory(config);
-            return new Refine(
-                refinedPath -> {
-                    var refinedTraj = refinedPath.generateTrajectory(config);
-                    return new Ramsete(refinedTraj, controller, getPose, output, requirements);
-                }, path, getPose, output, requirements
+            return new Ramsete(
+                trajectory,
+                controller,
+                getPose,
+                output,
+                time -> (1 - time / trajectory.getTotalTimeSeconds()),
+                requirements
             );
         };
 

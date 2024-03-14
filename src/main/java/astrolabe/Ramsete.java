@@ -1,10 +1,13 @@
 package astrolabe;
 
 import java.util.function.Consumer;
+import java.util.function.DoubleFunction;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
@@ -19,6 +22,30 @@ public class Ramsete extends Command {
     private final Supplier<Pose2d> getPose;
     private final Consumer<ChassisSpeeds> output;
 
+    // a function from [0, trajectory.getTotalTimeSeconds()] -> [0, 1]
+    // a value of 0 means that the ramsete controller doesn't do any feedback based on position, 
+    // just considering the yaw of the robot and the trajectory setpoint
+    // a value of 1 means that the ramsete controller behaves as normal, consider the position and yaw
+    // of the robot, as well as the trajectory setpoint
+    private final DoubleFunction<Double> positionCorrection;
+
+    public Ramsete(
+        Trajectory trajectory, 
+        RamseteController controller,
+        Supplier<Pose2d> getPose,
+        Consumer<ChassisSpeeds> output,
+        DoubleFunction<Double> positionCorrection,
+        Subsystem... requirements
+    ) {
+        this.trajectory = trajectory;
+        this.controller = controller;
+        this.getPose = getPose;
+        this.output = output;
+        this.positionCorrection = positionCorrection;
+
+        addRequirements(requirements);
+    }
+
     public Ramsete(
         Trajectory trajectory, 
         RamseteController controller,
@@ -26,12 +53,7 @@ public class Ramsete extends Command {
         Consumer<ChassisSpeeds> output,
         Subsystem... requirements
     ) {
-        this.trajectory = trajectory;
-        this.controller = controller;
-        this.getPose = getPose;
-        this.output = output;
-
-        addRequirements(requirements);
+        this(trajectory, controller, getPose, output, time -> 1.0, requirements);
     }
 
     @Override
@@ -47,7 +69,20 @@ public class Ramsete extends Command {
     public void execute() {
         System.out.printf("Executing ramsete at timer %s\n", timer.get());
         var state = trajectory.sample(timer.get());
-        var speeds = controller.calculate(getPose.get(), state);
+
+        Pose2d currentPose = getPose.get();
+        Rotation2d currentAngle = currentPose.getRotation();
+
+        double correctionFactor = positionCorrection.apply(timer.get());
+
+        Translation2d adjustedTranslation = currentPose.getTranslation().times(correctionFactor).plus(state.poseMeters.getTranslation().times(1-correctionFactor));
+
+        Pose2d adjustedPose = new Pose2d(
+            adjustedTranslation,
+            currentAngle
+        );
+
+        var speeds = controller.calculate(adjustedPose, state);
         output.accept(speeds);
 
         AstrolabeLogger.targetPoseLogger.accept(state.poseMeters);
@@ -62,5 +97,6 @@ public class Ramsete extends Command {
     public void end(boolean i) {
         System.out.println("Ramsete finished");
         output.accept(new ChassisSpeeds());
+        AstrolabeLogger.stateLogger.accept(0);
     }
 }
