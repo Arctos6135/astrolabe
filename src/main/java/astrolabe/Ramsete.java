@@ -40,6 +40,7 @@ public class Ramsete extends Command {
         timer.restart();
 
         AstrolabeLogger.stateLogger.accept(1);
+        AstrolabeLogger.trajectoryLogger.accept(trajectory);
     }
 
     @Override

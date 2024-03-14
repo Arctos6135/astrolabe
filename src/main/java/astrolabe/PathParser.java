@@ -40,6 +40,11 @@ public class PathParser {
             System.out.println(pose.toString());
         }
 
+        if (reversed) {
+            start = new Pose2d(start.getTranslation(), start.getRotation().plus(Rotation2d.fromDegrees(180)));
+            end = new Pose2d(end.getTranslation(), end.getRotation().plus(Rotation2d.fromDegrees(180)));
+        }
+
         return new AstrolabePath(start, waypoints, end, reversed);
     }
 
