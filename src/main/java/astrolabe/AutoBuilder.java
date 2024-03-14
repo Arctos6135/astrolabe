@@ -21,6 +21,7 @@ public class AutoBuilder {
     private static Supplier<ChassisSpeeds> getSpeeds;
     private static Consumer<Pose2d> resetPose;
     private static Consumer<ChassisSpeeds> output;
+    public static GlobalConfig config;
 
     public static void configureRamsete(
         RamseteController controller,
@@ -46,6 +47,7 @@ public class AutoBuilder {
         AutoBuilder.getSpeeds = getSpeeds;
         AutoBuilder.resetPose = resetPose;
         AutoBuilder.output = output;
+        AutoBuilder.config = config;
     }
 
     public static void configureRamseteRefine(
