@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
@@ -21,7 +22,7 @@ public class Refine extends SequentialCommandGroup {
         Consumer<ChassisSpeeds> output,
         Subsystem... requirements
     ) {
-        double refineDistance = 1;
+        double refineDistance = 0.2;
         Pose2d refinedEnd;
         Rotation2d endAngle = path.endPose().getRotation();
         Translation2d endTranslation = path.endPose().getTranslation();
@@ -38,7 +39,8 @@ public class Refine extends SequentialCommandGroup {
         addCommands(
             mainPath,
             new DriveToAngle(() -> getPose.get().getRotation(), output, endAngle, requirements),
-            new DriveToDistance(() -> getPose.get().getTranslation().getDistance(refinedEnd.getTranslation()), output, refineDistance, requirements)
+            new DriveToDistance(() -> getPose.get().getTranslation().getDistance(refinedEnd.getTranslation()), output, refineDistance, requirements),
+            new InstantCommand(() -> AstrolabeLogger.targetPoseLogger.accept(path.endPose()))
         );
     }
 }

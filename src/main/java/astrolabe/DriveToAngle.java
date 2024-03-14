@@ -24,10 +24,11 @@ public class DriveToAngle extends ProfiledPIDCommand {
         Subsystem... requirements
     ) {
         super(
-            new ProfiledPIDController(5, 0, 0, new Constraints(3, 3)),
+            new ProfiledPIDController(10, 0, 0, new Constraints(3, 3)),
             () -> getPose.get().getRadians(),
             target.getRadians(),
             (input, state) -> {
+                AstrolabeLogger.stateLogger.accept(2);
                 output.accept(new ChassisSpeeds(0, 0, state.velocity + input));
             },
             requirements

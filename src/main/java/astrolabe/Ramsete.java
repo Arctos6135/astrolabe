@@ -38,6 +38,8 @@ public class Ramsete extends Command {
     public void initialize() {
         System.out.println("Initializing ramsete");
         timer.restart();
+
+        AstrolabeLogger.stateLogger.accept(1);
     }
 
     @Override

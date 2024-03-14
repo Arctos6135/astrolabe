@@ -24,10 +24,11 @@ public class DriveToDistance extends ProfiledPIDCommand {
         Subsystem... requirements
     ) {
         super(
-            new ProfiledPIDController(5, 0, 0, new Constraints(3, 3)),
+            new ProfiledPIDController(10, 0, 0, new Constraints(3, 3)),
             () -> getPose.getAsDouble(),
             target,
             (input, state) -> {
+                AstrolabeLogger.stateLogger.accept(3);
                 output.accept(new ChassisSpeeds(state.velocity + input, 0, 0));
             },
             requirements
@@ -38,10 +39,11 @@ public class DriveToDistance extends ProfiledPIDCommand {
     }
 
     public boolean isFinished() {
-        return Math.abs(getDistance.getAsDouble() - target) < Units.degreesToRadians(0.5);
+        return Math.abs(getDistance.getAsDouble() - target) < Units.inchesToMeters(1);
     }
 
     public void end(boolean i) {
         output.accept(new ChassisSpeeds());
+        AstrolabeLogger.stateLogger.accept(0);
     }
 }

@@ -48,6 +48,37 @@ public class AutoBuilder {
         AutoBuilder.output = output;
     }
 
+    public static void configureRamseteRefine(
+        RamseteController controller,
+        Supplier<Pose2d> getPose,
+        Supplier<ChassisSpeeds> getSpeeds,
+        Consumer<Pose2d> resetPose,
+        Consumer<ChassisSpeeds> output,
+        GlobalConfig config,
+        Subsystem... requirements
+    ) {
+        if (isConfigured) {
+            DriverStation.reportError("Attempted to configure astrolabe AutoBuilder when it was already configured.", new StackTraceElement[]{});
+            return;
+        }
+        isConfigured = true;
+
+        commandBuilder = path -> {
+            var trajectory = path.generateTrajectory(config);
+            return new Refine(
+                refinedPath -> {
+                    var refinedTraj = refinedPath.generateTrajectory(config);
+                    return new Ramsete(refinedTraj, controller, getPose, output, requirements);
+                }, path, getPose, output, requirements
+            );
+        };
+
+        AutoBuilder.getPose = getPose;
+        AutoBuilder.getSpeeds = getSpeeds;
+        AutoBuilder.resetPose = resetPose;
+        AutoBuilder.output = output;
+    }
+
     public static Command buildPathFollowingCommand(AstrolabePath path) {
         return commandBuilder.apply(path);
     }
