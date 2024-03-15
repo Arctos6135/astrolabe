@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -67,7 +68,6 @@ public class Ramsete extends Command {
 
     @Override
     public void execute() {
-        System.out.printf("Executing ramsete at timer %s\n", timer.get());
         var state = trajectory.sample(timer.get());
 
         Pose2d currentPose = getPose.get();
@@ -86,6 +86,8 @@ public class Ramsete extends Command {
         output.accept(speeds);
 
         AstrolabeLogger.targetPoseLogger.accept(state.poseMeters);
+        AstrolabeLogger.angleErrorDegreesLogger.accept(currentAngle.minus(state.poseMeters.getRotation()).getDegrees());
+        AstrolabeLogger.distanceErrorLogger.accept(currentPose.getTranslation().getDistance(state.poseMeters.getTranslation()));
     }
 
     @Override
