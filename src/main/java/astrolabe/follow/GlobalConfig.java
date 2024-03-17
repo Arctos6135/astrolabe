@@ -1,4 +1,4 @@
-package astrolabe;
+package astrolabe.follow;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;

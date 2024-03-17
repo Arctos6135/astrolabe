@@ -1,4 +1,4 @@
-package astrolabe;
+package astrolabe.follow;
 
 import javax.management.RuntimeErrorException;
 

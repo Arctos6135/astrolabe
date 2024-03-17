@@ -1,4 +1,4 @@
-package astrolabe;
+package astrolabe.follow;
   
 import java.io.FileReader;
 import java.util.ArrayDeque;
@@ -11,7 +11,8 @@ import java.util.Objects;
 import org.json.simple.JSONArray; 
 import org.json.simple.JSONObject; 
 import org.json.simple.parser.*;
-import org.json.simple.parser.JSONParser; 
+import org.json.simple.parser.JSONParser;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;

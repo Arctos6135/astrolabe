@@ -1,4 +1,4 @@
-package astrolabe;
+package astrolabe.follow;
 
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
@@ -12,37 +12,38 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public class DriveToAngle extends ProfiledPIDCommand {
-    private final DoubleSupplier getAngle;
+public class DriveToDistance extends ProfiledPIDCommand {
+    private final DoubleSupplier getDistance;
     private final double target;
     private final Consumer<ChassisSpeeds> output;
 
-    public DriveToAngle(
-        Supplier<Rotation2d> getPose, 
+    public DriveToDistance(
+        DoubleSupplier getPose, 
         Consumer<ChassisSpeeds> output, 
-        Rotation2d target,
+        double target,
         Subsystem... requirements
     ) {
         super(
             new ProfiledPIDController(10, 0, 0, new Constraints(3, 3)),
-            () -> getPose.get().getRadians(),
-            target.getRadians(),
+            () -> getPose.getAsDouble(),
+            target,
             (input, state) -> {
-                AstrolabeLogger.stateLogger.accept(2);
-                output.accept(new ChassisSpeeds(0, 0, state.velocity + input));
+                AstrolabeLogger.stateLogger.accept(3);
+                output.accept(new ChassisSpeeds(state.velocity + input, 0, 0));
             },
             requirements
         );
         this.output = output;
-        this.getAngle = () -> getPose.get().getRadians();
-        this.target = target.getRadians();
+        this.getDistance = getPose;
+        this.target = target;
     }
 
     public boolean isFinished() {
-        return Math.abs(getAngle.getAsDouble() - target) < Units.degreesToRadians(0.5);
+        return Math.abs(getDistance.getAsDouble() - target) < Units.inchesToMeters(1);
     }
 
     public void end(boolean i) {
         output.accept(new ChassisSpeeds());
+        AstrolabeLogger.stateLogger.accept(0);
     }
 }

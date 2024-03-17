@@ -39,7 +39,7 @@ wrapper {
 jar {
   manifest {
     attributes(
-      'Main-Class': 'astrolabe.Main'
+      'Main-Class': 'astrolabe.generate.Main'
     )
   }
 }
