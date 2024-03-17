@@ -8,7 +8,7 @@ public record Segment(
      * @param t the point in the range [0, 1] to evaluate the spline at
      * @return
      */
-    public double evaluate(double t) {
+    public double sample(double t) {
         double inverse = 1 - t;
         double total = 0;
 
@@ -18,6 +18,16 @@ public record Segment(
         }
 
         return total;
+    }
+
+    public double derivative(double t) {
+        // TODO: actually compute the derivative instead of sketchily approximating it.
+        return (sample(t + 0.0001) - sample(t)) / 0.0001;
+    }
+
+    public double secondDerivative(double t) {
+        // TODO: actually compute the derivative instead of sketchily approximating it.
+        return (derivative(t + 0.0001) - derivative(t)) / 0.0001;
     }
 
     public static Segment fromTangents(
