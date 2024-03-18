@@ -148,4 +148,19 @@ public class Profiler {
 
         return new Trajectory(trajectory);
     }
+
+    public static Trajectory fromSpline(
+        Spline x,
+        Spline y,
+        double maxVelocity,
+        double maxAcceleration
+    ) {
+        ArrayList<State> states = new ArrayList<>();
+
+        for (int i = 0; i < x.segments().length; i++) {
+            states.addAll(distanceProfile(x.segments()[i], y.segments()[i], 0.03));
+        }
+
+        return profileTime(states, maxVelocity, maxAcceleration, 0, 0);
+    }
 }
