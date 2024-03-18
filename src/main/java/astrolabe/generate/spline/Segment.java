@@ -3,6 +3,7 @@ package astrolabe.generate.spline;
 public record Segment(
     double[] coefficients
 ) {
+    private static final double[] binomialFactors = {1, 5, 10, 10, 5, 1};
     /**
      * Evaluate the spline at a given point
      * @param t the point in the range [0, 1] to evaluate the spline at
@@ -13,7 +14,7 @@ public record Segment(
         double total = 0;
 
         for (int i = 0; i < coefficients.length; i++) {
-            double term = Math.pow(t, i) * Math.pow(inverse, coefficients.length - 1 - i) * coefficients[i];
+            double term = binomialFactors[i] * Math.pow(t, i) * Math.pow(inverse, coefficients.length - 1 - i) * coefficients[i];
             total += term;
         }
 
