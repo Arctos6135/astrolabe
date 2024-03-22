@@ -15,5 +15,6 @@ public class Main {
         AstrolabePath path = PathParser.loadPath(pathName);
         XYSpline spline = Heuristic.fromPath(path);
         Trajectory trajectory = Profiler.fromSpline(spline.x(), spline.y(), 3, 3);
+        TrajectoryWriter.writeTrajectory(trajectory, pathName);
     }
 }
