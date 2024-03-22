@@ -1,11 +1,19 @@
 package astrolabe.generate.spline;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+
 import astrolabe.follow.AstrolabePath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class Heuristic {
     public record XYSpline(Spline x, Spline y) {}
+    private record SplineState(
+        double x, double dx, double ddx,
+        double y, double dy, double ddy
+    ) {}
     public static XYSpline fromPath(AstrolabePath path) {
         // dy/dx = tan theta
         double dx = 1;
@@ -13,15 +21,55 @@ public class Heuristic {
         double ddx = 0;
         double ddy = 0;
 
-        Pose2d lastPose = path.startPose();
+        double dxEnd = 1;
+        double dyEnd = path.endPose().getRotation().getTan();
+        double ddxEnd = 0;
+        double ddyEnd = 0;
+
+        ArrayList<Translation2d> positions = new ArrayList<>();
+        positions.add(path.startPose().getTranslation());
+
+        for (int i = 0; i < path.waypoints().size(); i++) {
+            Translation2d current = path.waypoints().get(i);
+            positions.add(current);
+        }
+
+        positions.add(path.endPose().getTranslation());
+
+        ArrayList<Rotation2d> angles = new ArrayList<>();
+
+        for (int i = 1; i < positions.size() - 1; i++) {
+            Translation2d start = positions.get(i - 1);
+            Translation2d mid = positions.get(i);
+            Translation2d end = positions.get(i + 1);
+
+            Translation2d toMid = mid.minus(start);
+            Translation2d fromMid = end.minus(mid);
+
+            Rotation2d angle = toMid.getAngle().minus(fromMid.getAngle());
+            angles.add(angle);
+        }
+
+        ArrayList<SplineState> states = new ArrayList<>();
+        states.add(new SplineState(path.startPose().getX(), dx, ddx, path.startPose().getY(), dy, ddy));
+
+        for (int i = 0; i < angles.size(); i++) {
+            states.add(new SplineState(path.waypoints().get(i).getX(), angles.get(i).getTan(), 0, path.waypoints().get(i).getY(), 1, 0));
+        }
+
+        states.add(new SplineState(path.endPose().getX(), dxEnd, ddxEnd, path.endPose().getY(), dyEnd, ddyEnd));
 
         Segment[] xs = new Segment[path.waypoints().size() + 1];
         Segment[] ys = new Segment[path.waypoints().size() + 1];
 
-        for (int i = 0; i < path.waypoints().size(); i++) {
-            Translation2d currentPose = path.waypoints().get(i);
+        for (int i = 0; i < states.size() - 1; i++) {
+            SplineState start = states.get(i);
+            SplineState end = states.get(i + 1);
+
+            xs[i] = Segment.fromTangents(start.x, end.x, start.dx, end.dx, start.ddx, end.ddx);
+            ys[i] = Segment.fromTangents(start.y, end.y, start.dy, end.dy, start.ddy, end.ddy);
         }
 
-        return null;
+        return new XYSpline(new Spline(xs), new Spline(ys));
     }
 }
