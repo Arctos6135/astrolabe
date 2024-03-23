@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         String name = new Scanner(System.in).nextLine();
 
-        String pathName = Filesystem.getDeployDirectory() + "/pathplanner/paths" + name + ".path";
+        String pathName = "./src/main/deploy" + "/pathplanner/paths" + name + ".path";
 
         AstrolabePath path = PathParser.loadPath(pathName);
         XYSpline spline = Heuristic.fromPath(path);

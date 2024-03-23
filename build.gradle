@@ -1,8 +1,8 @@
 plugins {
   id 'java'
   id 'edu.wpi.first.wpilib.repositories.WPILibRepositoriesPlugin' version '2020.2'
-  // id 'edu.wpi.first.NativeUtils' version '2024.6.1'
-  // id 'edu.wpi.first.GradleJni' version '1.1.0'
+  //id 'edu.wpi.first.NativeUtils' version '2024.6.1'
+  id 'edu.wpi.first.GradleJni' version '1.1.0'
   // id 'edu.wpi.first.GradleVsCode' version '2.1.0'
 }
 
@@ -18,6 +18,8 @@ if (project.hasProperty('releaseMode')) {
 
 // Apply Java configuration
 dependencies {
+    implementation 'edu.wpi.first.cscore:cscore-java:2024.+'
+    implementation 'edu.wpi.first.cameraserver:cameraserver-java:2024.+'
     implementation 'edu.wpi.first.ntcore:ntcore-java:2024.+'
     implementation 'edu.wpi.first.wpilibj:wpilibj-java:2024.+'
     implementation 'edu.wpi.first.wpilibNewCommands:wpilibNewCommands-java:2024.+'
