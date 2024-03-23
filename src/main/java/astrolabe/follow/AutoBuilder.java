@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,6 +22,8 @@ public class AutoBuilder {
     private static Supplier<ChassisSpeeds> getSpeeds;
     private static Consumer<Pose2d> resetPose;
     private static Consumer<ChassisSpeeds> output;
+    private static Subsystem[] requirements;
+
     public static GlobalConfig config;
 
     public static void configureRamsete(
@@ -48,6 +51,7 @@ public class AutoBuilder {
         AutoBuilder.resetPose = resetPose;
         AutoBuilder.output = output;
         AutoBuilder.config = config;
+        AutoBuilder.requirements = requirements;
     }
 
     public static void configureRamseteRefine(
@@ -90,9 +94,14 @@ public class AutoBuilder {
         AutoBuilder.getSpeeds = getSpeeds;
         AutoBuilder.resetPose = resetPose;
         AutoBuilder.output = output;
+        AutoBuilder.requirements = requirements;
     }
 
     public static Command buildPathFollowingCommand(AstrolabePath path) {
         return commandBuilder.apply(path);
+    }
+
+    public static Command buildTrajectoryFollowingCommand(Trajectory trajectory) {
+        return new Ramsete(trajectory, new RamseteController(), getPose, output, requirements);
     }
 }
