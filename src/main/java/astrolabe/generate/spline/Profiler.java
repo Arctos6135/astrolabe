@@ -86,6 +86,7 @@ public class Profiler {
         previous.velocity = startVelocity;
         previous.acceleration = maxAcceleration;
         previous.state = states.get(0);
+        constrained.add(previous);
 
         // Forward pass
         for (int i = 1; i < states.size(); i++) {
@@ -155,10 +156,11 @@ public class Profiler {
 
             double dt = 0.0;
 
-            if (i > 0) {
-                trajectory.get(i - 1).accelerationMetersPerSecondSq = acceleration;
+            if (trajectory.size() != 0) {
+                trajectory.get(trajectory.size() - 1).accelerationMetersPerSecondSq = acceleration;
 
-                dt = (current.velocity - velocity) / acceleration;
+                //dt = (current.velocity - velocity) / acceleration;
+                dt = ds / current.velocity;
             }
 
             if (dt < 0) {
