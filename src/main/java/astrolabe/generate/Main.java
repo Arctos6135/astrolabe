@@ -11,7 +11,10 @@ import edu.wpi.first.math.trajectory.Trajectory;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String pathName = new Scanner(System.in).nextLine();
+        String name = new Scanner(System.in).nextLine();
+
+        String pathName = Filesystem.getDeployDirectory() + "/pathplanner/paths" + name + ".path";
+
         AstrolabePath path = PathParser.loadPath(pathName);
         XYSpline spline = Heuristic.fromPath(path);
         Trajectory trajectory = Profiler.fromSpline(spline.x(), spline.y(), 3, 3);
