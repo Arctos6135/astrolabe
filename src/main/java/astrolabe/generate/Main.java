@@ -25,7 +25,7 @@ public class Main {
         XYSpline spline = Heuristic.fromPath(path);
         System.out.println(spline.toString());
         System.out.println(spline.x());
-        Trajectory trajectory = Profiler.fromSpline(spline.x(), spline.y(), 3, 3);
+        Trajectory trajectory = Profiler.fromSpline(spline.x(), spline.y(), 3, 1, path.reversed());
         TrajectoryWriter.writeTrajectory(trajectory, outputPath);
     }
 }

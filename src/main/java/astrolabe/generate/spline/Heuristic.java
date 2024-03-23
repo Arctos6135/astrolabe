@@ -14,7 +14,16 @@ public class Heuristic {
         double x, double dx, double ddx,
         double y, double dy, double ddy
     ) {}
+
     public static XYSpline fromPath(AstrolabePath path) {
+        if (path.reversed()) {
+            return fromPathReversed(path);
+        } else {
+            return fromPathForward(path);
+        }
+    }
+
+    public static XYSpline fromPathForward(AstrolabePath path) {
         // dy/dx = tan theta
         double dx = 1;
         double dy = path.startPose().getRotation().getTan();
@@ -71,5 +80,14 @@ public class Heuristic {
         }
 
         return new XYSpline(new Spline(xs), new Spline(ys));
+    }
+
+    public static XYSpline fromPathReversed(AstrolabePath path) {
+        ArrayList<Translation2d> waypoints = new ArrayList<>();
+        for (int index = 0; index < path.waypoints().size(); index++) {
+            waypoints.add(path.waypoints().get(path.waypoints().size() - 1 - index));
+        }
+        AstrolabePath reversed = new AstrolabePath(path.endPose(), waypoints, path.startPose(), false);
+        return fromPathForward(reversed);
     }
 }

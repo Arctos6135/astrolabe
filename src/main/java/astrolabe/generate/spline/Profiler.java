@@ -3,8 +3,6 @@ package astrolabe.generate.spline;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.plaf.nimbus.State;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -188,6 +186,20 @@ public class Profiler {
         Spline x,
         Spline y,
         double maxVelocity,
+        double maxAcceleration,
+        boolean reversed
+    ) {
+        if (reversed) {
+            return reverseTrajectory(fromSplineForward(x, y, maxVelocity, maxAcceleration));
+        } else {
+            return fromSplineForward(x, y, maxVelocity, maxAcceleration);
+        }
+    }
+
+    public static Trajectory fromSplineForward(
+        Spline x,
+        Spline y,
+        double maxVelocity,
         double maxAcceleration
     ) {
         ArrayList<State> states = new ArrayList<>();
@@ -197,5 +209,19 @@ public class Profiler {
         }
 
         return profileTime(states, maxVelocity, maxAcceleration, 0, 0);
+    }
+
+    public static Trajectory reverseTrajectory(
+        Trajectory trajectory
+    ) {
+        ArrayList<Trajectory.State> states = new ArrayList<>();
+        double maxTime = trajectory.getTotalTimeSeconds();
+
+        for (int i = 0; i < trajectory.getStates().size(); i++) {
+            Trajectory.State old = trajectory.getStates().get(trajectory.getStates().size() - 1 - i);
+            states.add(new Trajectory.State(maxTime - old.timeSeconds, -old.velocityMetersPerSecond, -old.accelerationMetersPerSecondSq, old.poseMeters, old.curvatureRadPerMeter));
+        }
+
+        return new Trajectory(states);
     }
 }
