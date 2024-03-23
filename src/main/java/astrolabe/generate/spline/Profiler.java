@@ -37,7 +37,7 @@ public class Profiler {
 
         double t;
 
-        for (t = 0; t <= 1; t += 0.01) {
+        for (t = 0; t <= 1; t += 0.001) {
             double x = xSpline.sample(t);
             double y = ySpline.sample(t);
             // very sketchy way to find the arc length from the last point
