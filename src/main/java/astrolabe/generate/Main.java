@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String name = new Scanner(System.in).nextLine();
+        String name = System.getenv("TO_DEPLOY");
 
         String pathName = "./src/main/deploy" + "/pathplanner/paths/" + name + ".path";
 
