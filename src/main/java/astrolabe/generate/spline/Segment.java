@@ -1,5 +1,7 @@
 package astrolabe.generate.spline;
 
+import java.util.Arrays;
+
 public record Segment(
     double[] coefficients
 ) {
@@ -51,5 +53,10 @@ public record Segment(
         return new Segment(new double[]{
             p0, p1, p2, p3, p4, p5
         });
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(coefficients);
     }
 }

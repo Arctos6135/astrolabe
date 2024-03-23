@@ -20,7 +20,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class PathParser {
     public static AstrolabePath loadPath(String pathName) throws Exception {
         JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(pathName));
-        System.out.println(json.toString());
 
         ArrayDeque<Pose2d> anchors = new ArrayDeque<>();
 

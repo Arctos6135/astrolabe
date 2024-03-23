@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,8 +18,13 @@ import edu.wpi.first.wpilibj.Filesystem;
 
 public class TrajectoryWriter {
     public static JSONArray serializeTrajectory(Trajectory trajectory) {
-        ArrayList<Object> jsonStates = new ArrayList<>();
+        JSONArray jsonStates = new JSONArray();
         for (State state : trajectory.getStates()) {
+            Objects.requireNonNull(state.accelerationMetersPerSecondSq);
+            Objects.requireNonNull(state.curvatureRadPerMeter);
+            Objects.requireNonNull(state.velocityMetersPerSecond);
+            Objects.requireNonNull(state.timeSeconds);
+            Objects.requireNonNull(state.poseMeters);
             JSONObject jsonState = new JSONObject(Map.of(
                 "x", state.poseMeters.getX(),
                 "y", state.poseMeters.getY(),
@@ -31,7 +37,7 @@ public class TrajectoryWriter {
             jsonStates.add((Object) jsonState);
         }
 
-        return (JSONArray) (List<Object>) jsonStates;
+        return jsonStates;
     }
 
     public static void writeTrajectory(Trajectory trajectory, File file) throws IOException {
@@ -41,9 +47,13 @@ public class TrajectoryWriter {
         writer.close();
     }
 
-    public static void writeTrajectory(Trajectory trajectory, String pathName) throws IOException {
-        String filePath = Filesystem.getDeployDirectory() + "/pathplanner/trajectories/" + pathName + ".traj";
+    public static void writeTrajectory(Trajectory trajectory, String filePath) throws IOException {
+        File file = new File(filePath);
+        System.out.println(file.getAbsolutePath());
 
-        writeTrajectory(trajectory, new File(filePath));
+        file.getParentFile().mkdirs();
+
+        file.createNewFile();
+        writeTrajectory(trajectory, file);
     }
 }

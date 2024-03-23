@@ -16,6 +16,11 @@ public class Profiler {
         public double distance;
         public double velocity;
         public double acceleration;
+
+        @Override
+        public String toString() {
+            return String.format("ConstrainedState [distance=%.2f, velocity=%.2f, acceleration=%.2f]", distance, velocity, acceleration);
+        }
     }
     private record State(
         Pose2d pose, double curvature
@@ -32,7 +37,9 @@ public class Profiler {
         double lastX = xSpline.sample(0);
         double lastY = ySpline.sample(0);
 
-        for (double t = 0; t <= 1; t += 0.001) {
+        double t;
+
+        for (t = 0; t <= 1; t += 0.01) {
             double x = xSpline.sample(t);
             double y = ySpline.sample(t);
             // very sketchy way to find the arc length from the last point
@@ -45,6 +52,8 @@ public class Profiler {
                 lastY = t;
             }
         }
+
+        System.out.printf("Processed %s samples\n", samples.size());
 
         return samples;
     }
@@ -77,13 +86,16 @@ public class Profiler {
 
         ConstrainedState previous = new ConstrainedState();
         previous.velocity = startVelocity;
+        previous.acceleration = maxAcceleration;
         previous.state = states.get(0);
 
         // Forward pass
-        for (int i = 0; i < constrained.size(); i++) {
+        for (int i = 1; i < states.size(); i++) {
             ConstrainedState current = new ConstrainedState();
+            current.state = states.get(i);
 
             current.distance = current.state.pose.getTranslation().getDistance(previous.state.pose.getTranslation());
+
 
             // enforce positive acceleration constraints
             current.velocity = Math.min(
@@ -93,12 +105,19 @@ public class Profiler {
                 )
             );
 
+            current.acceleration = maxAcceleration;
+
+
             previous = current;
+
+            constrained.add(current);
         }
 
         ConstrainedState next = new ConstrainedState();
         next.velocity = endVelocity;
         next.state = states.get(states.size() - 1);
+
+        System.out.printf("Starting with next %s\n", next);
 
         // Backward pass
         for (int i = constrained.size() - 1; i >= 0; i--) {
@@ -107,9 +126,13 @@ public class Profiler {
             current.velocity = Math.min(
                 current.velocity,
                 Math.sqrt(
-                    next.velocity * next.velocity - maxAcceleration * current.distance * 2.0
+                    next.velocity * next.velocity + maxAcceleration * current.distance * 2.0
                 )
             );
+
+            next = current;
+
+            System.out.println(current);
         }
 
         List<Trajectory.State> trajectory = new ArrayList<>();
@@ -120,9 +143,17 @@ public class Profiler {
         for (int i = 0; i < constrained.size(); i++) {
             ConstrainedState current = constrained.get(i);
 
-            double ds = current.distance - distance;
+            double ds = current.distance;
+
+            if (ds == 0.0) {
+                continue;
+            }
+
+            System.out.printf("Current %s, velocity %s, ds %s\n", current.velocity, velocity, ds);
 
             double acceleration = (current.velocity * current.velocity - velocity * velocity) / (ds * 2.0);
+
+            //System.out.printf("Calculated acceleration %s\n", acceleration);
 
             double dt = 0.0;
 
@@ -130,6 +161,10 @@ public class Profiler {
                 trajectory.get(i - 1).accelerationMetersPerSecondSq = acceleration;
 
                 dt = (current.velocity - velocity) / acceleration;
+            }
+
+            if (dt < 0) {
+                throw new ArithmeticException();
             }
 
             velocity = current.velocity;
