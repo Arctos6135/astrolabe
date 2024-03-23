@@ -123,7 +123,7 @@ public class AutoBuilder {
             Translation2d flippedTranslation = new Translation2d(16.54 - state.poseMeters.getX(), state.poseMeters.getY());
             Rotation2d flippedRotation = Rotation2d.fromDegrees(180).minus(state.poseMeters.getRotation());
             Pose2d flippedPose = new Pose2d(flippedTranslation, flippedRotation);
-            State flipped = new State(state.timeSeconds, state.velocityMetersPerSecond, state.accelerationMetersPerSecondSq, flippedPose, state.curvatureRadPerMeter);
+            State flipped = new State(state.timeSeconds, state.velocityMetersPerSecond, state.accelerationMetersPerSecondSq, flippedPose, -state.curvatureRadPerMeter);
 
             states.add(flipped);
         }
