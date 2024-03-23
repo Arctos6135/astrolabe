@@ -8,6 +8,7 @@ import astrolabe.generate.spline.Heuristic;
 import astrolabe.generate.spline.Profiler;
 import astrolabe.generate.spline.Heuristic.XYSpline;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.Filesystem;
 
 public class Main {
     public static void main(String[] args) throws Exception {
