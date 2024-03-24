@@ -25,32 +25,66 @@ public class Profiler {
     private record State(
         Pose2d pose, double curvature
     ) {}
+    // private static List<State> distanceProfile(
+    //     Segment xSpline,
+    //     Segment ySpline,
+    //     double arcLength
+    // ) {
+    //     ArrayList<State> samples = new ArrayList<>();
+    //     samples.add(getPoint(xSpline, ySpline, 0));
+
+    //     double lastT = 0;
+    //     double lastX = xSpline.sample(0);
+    //     double lastY = ySpline.sample(0);
+
+    //     double t;
+
+    //     for (t = 0; t <= 1; t += 0.1) {
+    //         double x = xSpline.sample(t);
+    //         double y = ySpline.sample(t);
+    //         // very sketchy way to find the arc length from the last point
+    //         double currentArc = Math.sqrt(Math.pow(lastT - t, 2) + Math.pow(lastX - x, 2) + Math.pow(lastY - y, 2));
+
+    //         if (currentArc >= arcLength) {
+    //             samples.add(getPoint(xSpline, ySpline, t));
+    //             lastT = t;
+    //             lastX = x;
+    //             lastY = t;
+    //         }
+    //     }
+
+    //     return samples;
+    // }
+
     private static List<State> distanceProfile(
         Segment xSpline,
         Segment ySpline,
-        double arcLength
+        double arcLength,
+        boolean skipFirst
     ) {
         ArrayList<State> samples = new ArrayList<>();
         samples.add(getPoint(xSpline, ySpline, 0));
 
-        double lastT = 0;
         double lastX = xSpline.sample(0);
         double lastY = ySpline.sample(0);
 
         double t;
 
-        for (t = 0; t <= 1; t += 0.1) {
+        for (t = 0; t <= 1; t += 0.001) {
             double x = xSpline.sample(t);
             double y = ySpline.sample(t);
             // very sketchy way to find the arc length from the last point
-            double currentArc = Math.sqrt(Math.pow(lastT - t, 2) + Math.pow(lastX - x, 2) + Math.pow(lastY - y, 2));
+            double currentArc = Math.sqrt(Math.pow(lastX - x, 2) + Math.pow(lastY - y, 2));
 
             if (currentArc >= arcLength) {
                 samples.add(getPoint(xSpline, ySpline, t));
-                lastT = t;
                 lastX = x;
-                lastY = t;
+                lastY = y;
             }
+        }
+
+        if (skipFirst) {
+            samples.remove(0);
         }
 
         return samples;
@@ -210,7 +244,7 @@ public class Profiler {
         ArrayList<State> states = new ArrayList<>();
 
         for (int i = 0; i < x.segments().length; i++) {
-            states.addAll(distanceProfile(x.segments()[i], y.segments()[i], 0.03));
+            states.addAll(distanceProfile(x.segments()[i], y.segments()[i], 0.03, i != 0));
         }
 
         return profileTime(states, maxVelocity, maxAcceleration, 0, 0);
