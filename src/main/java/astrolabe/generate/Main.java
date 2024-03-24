@@ -4,7 +4,7 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String name = System.getenv("GENERATE_ALL");
+        String regenerate = System.getenv("GENERATE_ALL");
         String root = System.getenv("DEPLOY_RELATIVE");
 
         System.out.println("Generating with root directory " + root);
@@ -16,11 +16,11 @@ public class Main {
         for (File file : new File(deployDirectory + "pathplanner/paths").listFiles()) {
             String pathName = file.getName().split("\\.")[0];
 
-            if (name == null) {
+            if (regenerate == null) {
                 if (UpdateChecker.checkUpdates(pathName, deployDirectory)) total++;
             } else {
                 total++;
-                UpdateChecker.update(UpdateChecker.hashPath(pathName, deployDirectory), pathName, deployDirectory);
+                UpdateChecker.update(UpdateChecker.hashPath(pathName, deployDirectory), UpdateChecker.currentAstrolabeCommit(), pathName, deployDirectory);
             }
         }
 

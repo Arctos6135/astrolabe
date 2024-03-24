@@ -17,7 +17,7 @@ import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.Filesystem;
 
 public class TrajectoryWriter {
-    public static JSONObject serializeTrajectory(long pathHash, Trajectory trajectory) {
+    public static JSONObject serializeTrajectory(long pathHash, long astrolabeCommit, Trajectory trajectory) {
         JSONArray jsonStates = new JSONArray();
         for (State state : trajectory.getStates()) {
             Objects.requireNonNull(state.accelerationMetersPerSecondSq);
@@ -40,23 +40,24 @@ public class TrajectoryWriter {
         JSONObject json = new JSONObject();
         json.put("states", jsonStates);
         json.put("pathHash", pathHash);
+        json.put("astrolabeCommit", astrolabeCommit);
 
         return json;
     }
 
-    public static void writeTrajectory(long pathHash, Trajectory trajectory, File file) throws IOException {
-        JSONObject array = serializeTrajectory(pathHash, trajectory);
+    public static void writeTrajectory(long pathHash, long astrolabeCommit, Trajectory trajectory, File file) throws IOException {
+        JSONObject array = serializeTrajectory(pathHash, astrolabeCommit, trajectory);
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(array.toJSONString());
         writer.close();
     }
 
-    public static void writeTrajectory(long pathHash, Trajectory trajectory, String filePath) throws IOException {
+    public static void writeTrajectory(long pathHash, long astrolabeCommit, Trajectory trajectory, String filePath) throws IOException {
         File file = new File(filePath);
 
         file.getParentFile().mkdirs();
 
         file.createNewFile();
-        writeTrajectory(pathHash, trajectory, file);
+        writeTrajectory(pathHash, astrolabeCommit, trajectory, file);
     }
 }
