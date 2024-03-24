@@ -51,8 +51,6 @@ public class Profiler {
             }
         }
 
-        System.out.printf("Processed %s samples\n", samples.size());
-
         return samples;
     }
 
@@ -116,8 +114,6 @@ public class Profiler {
         next.velocity = endVelocity;
         next.state = states.get(states.size() - 1);
 
-        System.out.printf("Starting with next %s\n", next);
-
         // Backward pass
         for (int i = constrained.size() - 1; i >= 0; i--) {
             ConstrainedState current = constrained.get(i);
@@ -130,8 +126,6 @@ public class Profiler {
             );
 
             next = current;
-
-            System.out.println(current);
         }
 
         List<Trajectory.State> trajectory = new ArrayList<>();
@@ -147,8 +141,6 @@ public class Profiler {
             if (ds == 0.0) {
                 continue;
             }
-
-            System.out.printf("Current %s, velocity %s, ds %s\n", current.velocity, velocity, ds);
 
             double acceleration = (current.velocity * current.velocity - velocity * velocity) / (ds * 2.0);
 

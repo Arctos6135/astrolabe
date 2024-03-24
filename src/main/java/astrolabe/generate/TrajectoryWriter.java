@@ -17,7 +17,7 @@ import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.Filesystem;
 
 public class TrajectoryWriter {
-    public static JSONArray serializeTrajectory(Trajectory trajectory) {
+    public static JSONObject serializeTrajectory(long pathHash, Trajectory trajectory) {
         JSONArray jsonStates = new JSONArray();
         for (State state : trajectory.getStates()) {
             Objects.requireNonNull(state.accelerationMetersPerSecondSq);
@@ -37,23 +37,26 @@ public class TrajectoryWriter {
             jsonStates.add((Object) jsonState);
         }
 
-        return jsonStates;
+        JSONObject json = new JSONObject();
+        json.put("states", jsonStates);
+        json.put("pathHash", pathHash);
+
+        return json;
     }
 
-    public static void writeTrajectory(Trajectory trajectory, File file) throws IOException {
-        JSONArray array = serializeTrajectory(trajectory);
+    public static void writeTrajectory(long pathHash, Trajectory trajectory, File file) throws IOException {
+        JSONObject array = serializeTrajectory(pathHash, trajectory);
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(array.toJSONString());
         writer.close();
     }
 
-    public static void writeTrajectory(Trajectory trajectory, String filePath) throws IOException {
+    public static void writeTrajectory(long pathHash, Trajectory trajectory, String filePath) throws IOException {
         File file = new File(filePath);
-        System.out.println(file.getAbsolutePath());
 
         file.getParentFile().mkdirs();
 
         file.createNewFile();
-        writeTrajectory(trajectory, file);
+        writeTrajectory(pathHash, trajectory, file);
     }
 }

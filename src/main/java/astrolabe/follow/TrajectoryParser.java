@@ -15,7 +15,7 @@ import edu.wpi.first.math.trajectory.Trajectory.State;
 
 public class TrajectoryParser {
     public static Trajectory parseTrajectory(String pathName) throws Exception {
-        JSONArray statesMap = (JSONArray) new JSONParser().parse(new FileReader(pathName));
+        JSONArray statesMap = (JSONArray) ((JSONObject) new JSONParser().parse(new FileReader(pathName))).get("states");
         List<State> states = new ArrayList<>();
 
         for (Object object : statesMap) {
