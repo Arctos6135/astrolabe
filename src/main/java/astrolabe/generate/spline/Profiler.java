@@ -133,9 +133,9 @@ public class Profiler {
             }
         }
 
-        System.out.println("After initialization:");
+        //System.out.println("After initialization:");
         for (ConstrainedState constrainedState : constrained) {
-            System.out.println(constrainedState.toString());
+            //System.out.println(constrainedState.toString());
         }
 
         {
@@ -154,9 +154,9 @@ public class Profiler {
             }
         }
 
-        System.out.println("After fist pass:");
+        //System.out.println("After fist pass:");
         for (ConstrainedState constrainedState : constrained) {
-            System.out.println(constrainedState.toString());
+            //System.out.println(constrainedState.toString());
         }
 
         {
@@ -177,9 +177,9 @@ public class Profiler {
             }
         }
 
-        System.out.println("After second pass:");
+        //System.out.println("After second pass:");
         for (ConstrainedState constrainedState : constrained) {
-            System.out.println(constrainedState.toString());
+            //System.out.println(constrainedState.toString());
         }
 
         double time = 0;
