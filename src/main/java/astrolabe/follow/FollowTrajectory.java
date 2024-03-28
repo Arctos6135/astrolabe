@@ -5,26 +5,18 @@ import javax.management.RuntimeErrorException;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.math.trajectory.Trajectory;
+
 
 public class FollowTrajectory extends Command {
-    private final Command inner;
-
-    public FollowTrajectory(AstrolabePath path) {
-        inner = AutoBuilder.buildPathFollowingCommand(path);
-
-        for (Subsystem subsystem : inner.getRequirements()) {
-            addRequirements(subsystem);
-        }
-    }
+    private Command inner;
+    private Trajectory toFollow;
 
     public FollowTrajectory(String pathName) {
         try {
             String filePath = Filesystem.getDeployDirectory() + "/pathplanner/trajectories/" + pathName + ".traj";
-            inner = AutoBuilder.buildTrajectoryFollowingCommand(TrajectoryParser.parseTrajectory(filePath));
 
-            for (Subsystem subsystem : inner.getRequirements()) {
-                addRequirements(subsystem);
-            }
+            toFollow = TrajectoryParser.parseTrajectory(filePath);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -32,6 +24,10 @@ public class FollowTrajectory extends Command {
 
     @Override
     public void initialize() {
+        inner = AutoBuilder.buildTrajectoryFollowingCommand(toFollow);
+        for (Subsystem subsystem : inner.getRequirements()) {
+            addRequirements(subsystem);
+        }
         inner.initialize();
     }
 
