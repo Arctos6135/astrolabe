@@ -51,8 +51,9 @@ public class UpdateChecker {
         String outputPath = deployDirectory + "pathplanner/trajectories/" + name + ".traj";
 
         AstrolabePath path = PathParser.loadPath(pathName);
-        XYSpline spline = Heuristic.fromPath(path);
-        Trajectory trajectory = Profiler.fromSpline(spline.x(), spline.y(), 2.5, 2, path.reversed());
+        Trajectory trajectory = new Optimizer(path).run();
+        // XYSpline spline = Heuristic.fromPath(path);
+        // Trajectory trajectory = Profiler.fromSpline(spline.x(), spline.y(), 2.5, 2, path.reversed());
         TrajectoryWriter.writeTrajectory(hash, astrolabeCommit, trajectory, outputPath);
 
         System.out.printf("\t%s states and %s seconds\n", trajectory.getStates().size(), trajectory.getTotalTimeSeconds());

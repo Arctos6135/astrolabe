@@ -221,6 +221,7 @@ public class Profiler {
 
         return new Trajectory(trajectory);
     }
+
     public static Trajectory fromSpline(
         Spline x,
         Spline y,
@@ -228,10 +229,21 @@ public class Profiler {
         double maxAcceleration,
         boolean reversed
     ) {
+        return fromSpline(x, y, maxVelocity, maxAcceleration, reversed, false);
+    }
+
+    public static Trajectory fromSpline(
+        Spline x,
+        Spline y,
+        double maxVelocity,
+        double maxAcceleration,
+        boolean reversed,
+        boolean fastMode
+    ) {
         if (reversed) {
-            return reverseTrajectory(fromSplineForward(x, y, maxVelocity, maxAcceleration));
+            return reverseTrajectory(fromSplineForward(x, y, maxVelocity, maxAcceleration, fastMode));
         } else {
-            return fromSplineForward(x, y, maxVelocity, maxAcceleration);
+            return fromSplineForward(x, y, maxVelocity, maxAcceleration, fastMode);
         }
     }
 
@@ -239,12 +251,13 @@ public class Profiler {
         Spline x,
         Spline y,
         double maxVelocity,
-        double maxAcceleration
+        double maxAcceleration,
+        boolean fastMode
     ) {
         ArrayList<State> states = new ArrayList<>();
 
         for (int i = 0; i < x.segments().length; i++) {
-            states.addAll(distanceProfile(x.segments()[i], y.segments()[i], 0.03, i != 0));
+            states.addAll(distanceProfile(x.segments()[i], y.segments()[i], fastMode ? 0.1 : 0.03, i != 0));
         }
 
         return profileTime(states, maxVelocity, maxAcceleration, 0, 0);

@@ -2,6 +2,8 @@ package astrolabe.generate.spline;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import astrolabe.follow.AstrolabePath;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,16 +26,28 @@ public class Heuristic {
     }
 
     public static XYSpline fromPathForward(AstrolabePath path) {
+        Double[] ddxs = new Double[path.waypoints().size() + 2];
+        Double[] ddys = new Double[path.waypoints().size() + 2];
+
+        for (int i = 0; i < ddys.length; i++) {
+            ddxs[i] = 0.0;
+            ddys[i] = 0.0;
+        }
+        
+        return fromPathForward(path, Arrays.asList(ddxs), Arrays.asList(ddys));
+    }
+
+    public static XYSpline fromPathForward(AstrolabePath path, List<Double> ddxs, List<Double> ddys) {
         // dy/dx = tan theta
         double dx = 1;
         double dy = path.startPose().getRotation().getTan();
-        double ddx = 0;
-        double ddy = 0;
+        double ddx = ddxs.get(0);
+        double ddy = ddys.get(0);
 
         double dxEnd = 1;
         double dyEnd = path.endPose().getRotation().getTan();
-        double ddxEnd = 0;
-        double ddyEnd = 0;
+        double ddxEnd = ddxs.get(ddxs.size() - 1);
+        double ddyEnd = ddys.get(ddys.size() - 1);
 
         ArrayList<Translation2d> positions = new ArrayList<>();
         positions.add(path.startPose().getTranslation());
@@ -64,8 +78,8 @@ public class Heuristic {
 
         for (int i = 0; i < angles.size(); i++) {
             states.add(new SplineState(
-                path.waypoints().get(i).getX(), angles.get(i).getCos(), 0, 
-                path.waypoints().get(i).getY(), angles.get(i).getSin(), 0
+                path.waypoints().get(i).getX(), angles.get(i).getCos(), ddxs.get(i), 
+                path.waypoints().get(i).getY(), angles.get(i).getSin(), ddys.get(i)
             ));
         }
 
