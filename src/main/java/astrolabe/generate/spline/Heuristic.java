@@ -55,7 +55,7 @@ public class Heuristic {
             Translation2d toMid = mid.minus(start);
             Translation2d fromMid = end.minus(mid);
 
-            Rotation2d angle = toMid.getAngle().minus(fromMid.getAngle());
+            Rotation2d angle = toMid.getAngle().plus(fromMid.getAngle()).times(0.5);
             angles.add(angle);
         }
 
@@ -63,7 +63,10 @@ public class Heuristic {
         states.add(new SplineState(path.startPose().getX(), dx, ddx, path.startPose().getY(), dy, ddy));
 
         for (int i = 0; i < angles.size(); i++) {
-            states.add(new SplineState(path.waypoints().get(i).getX(), angles.get(i).getTan(), 0, path.waypoints().get(i).getY(), 1, 0));
+            states.add(new SplineState(
+                path.waypoints().get(i).getX(), angles.get(i).getCos(), 0, 
+                path.waypoints().get(i).getY(), angles.get(i).getSin(), 0
+            ));
         }
 
         states.add(new SplineState(path.endPose().getX(), dxEnd, ddxEnd, path.endPose().getY(), dyEnd, ddyEnd));
