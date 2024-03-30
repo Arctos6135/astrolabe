@@ -89,6 +89,6 @@ public class Optimizer {
 
         XYSpline spline = Heuristic.fromPathForward(path, ddxs, ddys);
 
-        return Profiler.fromSpline(spline.x(), spline.y(), 3, 1.5, path.reversed());
+        return Profiler.fromSpline(spline.x(), spline.y(), 3.5, 2.5, path.reversed());
     }
 }

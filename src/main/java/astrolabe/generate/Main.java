@@ -5,7 +5,7 @@ import java.io.File;
 public class Main {
     public static void main(String[] args) throws Exception {
         String regenerate = System.getenv("GENERATE_ALL");
-        String root = System.getenv("DEPLOY_RELATIVE");
+        String root = "../";//System.getenv("DEPLOY_RELATIVE");
 
         System.out.println("Generating with root directory " + root);
 

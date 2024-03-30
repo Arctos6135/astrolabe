@@ -25,7 +25,7 @@ public class AutoBuilder {
     private static Supplier<ChassisSpeeds> getSpeeds;
     private static Consumer<Pose2d> resetPose;
     private static Consumer<ChassisSpeeds> output;
-    private static Subsystem[] requirements;
+    public static Subsystem[] requirements;
     private static BooleanSupplier shouldFlipPath;
 
     public static GlobalConfig config;

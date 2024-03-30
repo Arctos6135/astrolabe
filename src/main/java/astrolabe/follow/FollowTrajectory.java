@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.math.trajectory.Trajectory;
-
+import astrolabe.follow.AutoBuilder;
 
 public class FollowTrajectory extends Command {
     private Command inner;
@@ -17,6 +17,7 @@ public class FollowTrajectory extends Command {
             String filePath = Filesystem.getDeployDirectory() + "/pathplanner/trajectories/" + pathName + ".traj";
 
             toFollow = TrajectoryParser.parseTrajectory(filePath);
+            addRequirements(AutoBuilder.requirements);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
