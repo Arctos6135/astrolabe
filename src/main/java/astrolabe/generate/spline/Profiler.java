@@ -271,7 +271,7 @@ public class Profiler {
 
         for (int i = 0; i < trajectory.getStates().size(); i++) {
             Trajectory.State old = trajectory.getStates().get(trajectory.getStates().size() - 1 - i);
-            states.add(new Trajectory.State(maxTime - old.timeSeconds, -old.velocityMetersPerSecond, -old.accelerationMetersPerSecondSq, old.poseMeters, old.curvatureRadPerMeter));
+            states.add(new Trajectory.State(maxTime - old.timeSeconds, -old.velocityMetersPerSecond, old.accelerationMetersPerSecondSq, old.poseMeters, old.curvatureRadPerMeter));
         }
 
         return new Trajectory(states);

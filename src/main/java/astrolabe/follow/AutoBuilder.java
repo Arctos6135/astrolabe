@@ -113,7 +113,7 @@ public class AutoBuilder {
         if (shouldFlipPath.getAsBoolean()) {
             trajectory = flipTrajectory(trajectory);
         }
-        return new Ramsete(trajectory, new RamseteController(), getPose, output, requirements);
+        return new SimpleFeedforward(trajectory, getPose, output, requirements);
     }
 
     private static Trajectory flipTrajectory(Trajectory trajectory) {
